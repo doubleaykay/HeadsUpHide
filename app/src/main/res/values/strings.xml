@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Heads Up Hide</string>
+    <string name="pref_up_to_hide">Swipe up to hide</string>
+    <string name="pref_hide_summ_on">Swiping will push the notification to the shade</string>
+    <string name="pref_hide_summ_off">Swiping will dismiss the notification</string>
+    <string name="pref_left_right_to_hide">Swipe left or right to hide</string>
+    <string name="title_activity_settings">Heads Up Hide Preferences</string>
 </resources>

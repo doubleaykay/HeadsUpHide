@@ -13,6 +13,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodReplacement;
+import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
@@ -21,13 +22,21 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
  */
 public class ModHeadsUp implements IXposedHookLoadPackage
 {
+	private static final String SWIPE_UP_TO_HIDE = "SWIPE_UP_TO_HIDE";
+
+	private static final String SWIPE_LEFT_RIGHT_TO_HIDE = "SWIPE_LEFT_RIGHT_TO_HIDE";
+
 	@Override
 	public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam loadPackageParam)
 	{
 		try
 		{
 			if (!loadPackageParam.packageName.equals("com.android.systemui"))
+			{
 				return;
+			}
+
+			final XSharedPreferences mSharedPreferences = new XSharedPreferences("com.lewisjuggins.headsuphide");
 
 			findAndHookMethod("com.android.systemui.statusbar.policy.HeadsUpNotificationView.EdgeSwipeHelper", loadPackageParam.classLoader, "onInterceptTouchEvent", MotionEvent.class,
 					new XC_MethodReplacement()
@@ -38,7 +47,7 @@ public class ModHeadsUp implements IXposedHookLoadPackage
 						{
 							final MotionEvent ev = (MotionEvent) methodHookParam.args[0];
 							final float mTouchSlop = getFloatField(methodHookParam.thisObject, "mTouchSlop");
-							final Object mBar = getObjectField(getSurroundingThis(methodHookParam.thisObject), "mBar"); //may need to come from parent obj.
+							final Object mBar = getObjectField(getSurroundingThis(methodHookParam.thisObject), "mBar");
 
 							switch(ev.getActionMasked())
 							{
@@ -60,7 +69,7 @@ public class ModHeadsUp implements IXposedHookLoadPackage
 										}
 										if(dY < 0)
 										{
-											if(true)
+											if(mSharedPreferences.getBoolean(SWIPE_UP_TO_HIDE, true))
 											{
 												callMethod(getSurroundingThis(methodHookParam.thisObject), "release");
 												callMethod(mBar, "scheduleHeadsUpClose");
@@ -89,9 +98,9 @@ public class ModHeadsUp implements IXposedHookLoadPackage
 				protected Object replaceHookedMethod(final MethodHookParam methodHookParam)
 						throws Throwable
 				{
-					final Object mBar = getObjectField(methodHookParam.thisObject, "mBar"); //may need to come from parent obj.
+					final Object mBar = getObjectField(methodHookParam.thisObject, "mBar");
 
-					if(true)
+					if(mSharedPreferences.getBoolean(SWIPE_LEFT_RIGHT_TO_HIDE, false))
 					{
 						callMethod(methodHookParam.thisObject, "release");
 						callMethod(mBar, "scheduleHeadsUpClose");

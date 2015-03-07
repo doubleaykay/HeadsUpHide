@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <SwitchPreference
+        android:key="SWIPE_UP_TO_HIDE"
+        android:title="@string/pref_up_to_hide"
+        android:summaryOn="@string/pref_hide_summ_on"
+        android:summaryOff="@string/pref_hide_summ_off"
+        android:defaultValue="true" />
+
+    <SwitchPreference
+        android:key="SWIPE_LEFT_RIGHT_TO_HIDE"
+        android:title="@string/pref_left_right_to_hide"
+        android:summaryOn="@string/pref_hide_summ_on"
+        android:summaryOff="@string/pref_hide_summ_off"
+        android:defaultValue="false" />
+</PreferenceScreen>

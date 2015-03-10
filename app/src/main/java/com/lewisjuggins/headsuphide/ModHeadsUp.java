@@ -9,6 +9,7 @@ import static de.robv.android.xposed.XposedHelpers.getSurroundingThis;
 import static de.robv.android.xposed.XposedHelpers.setBooleanField;
 import static de.robv.android.xposed.XposedHelpers.setFloatField;
 
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import de.robv.android.xposed.IXposedHookLoadPackage;
@@ -69,6 +70,10 @@ public class ModHeadsUp implements IXposedHookLoadPackage
 										}
 										if(dY < 0)
 										{
+											Log.d("ModHeadsUp daX", String.valueOf(daX));
+											Log.d("ModHeadsUp daY", String.valueOf(daY));
+											Log.d("ModHeadsUp dY", String.valueOf(dY));
+
 											if(mSharedPreferences.getBoolean(SWIPE_UP_TO_HIDE, true))
 											{
 												callMethod(getSurroundingThis(methodHookParam.thisObject), "release");
@@ -76,7 +81,15 @@ public class ModHeadsUp implements IXposedHookLoadPackage
 											}
 											else
 											{
-												callMethod(mBar, "onHeadsUpDismissed");
+												try
+												{
+													callMethod(mBar, "onHeadsUpDismissed");
+												}
+												catch(NoSuchMethodError e)
+												{
+													//Likely to be on CyanogenMod, and they changed the signature. Who uses overloading now anyway..?
+													callMethod(mBar, "onHeadsUpDismissed", 0);
+												}
 											}
 										}
 										setBooleanField(methodHookParam.thisObject, "mConsuming", true);
@@ -107,7 +120,15 @@ public class ModHeadsUp implements IXposedHookLoadPackage
 					}
 					else
 					{
-						callMethod(mBar, "onHeadsUpDismissed");
+						try
+						{
+							callMethod(mBar, "onHeadsUpDismissed");
+						}
+						catch(NoSuchMethodError e)
+						{
+							//Likely to be on CyanogenMod, and they changed the signature. Who uses overloading now anyway..?
+							callMethod(mBar, "onHeadsUpDismissed", 0);
+						}
 					}
 
 					return null;
